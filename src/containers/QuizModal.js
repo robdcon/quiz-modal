@@ -22,19 +22,13 @@ class QuizModal extends Component
 			currentOptions: props.questions[0].options,
 			selectedOptionFeedback: "",
 			currentIndex:0,
-			quizLength: props.questions.length
+			quizLength: props.questions.length,
+			score: 0
 		}
 
 		this.setNextQuestion = this.setNextQuestion.bind(this);
 		this.incrementCurrent = this.incrementCurrent.bind(this);
 	}
-
-	// getCurrent()
-	// {
-	// 	let current = this.state.currentIndex
-	// 	return current
-	// }
-
 	
 	incrementCurrent()
 	{
@@ -55,6 +49,33 @@ class QuizModal extends Component
 		
 	}
 
+	setResult(boolean)
+	{
+		this.setState({
+
+			selectionResult: boolean
+		})
+	}
+
+	addToWrongAnswers()
+	{
+		console.log('wrong answer')
+	}
+
+	incrementScore()
+	{
+		this.setState((prevState) => ({
+
+			score: prevState.score + 1
+		}))
+	}
+
+	handleResponse = (boolean) =>
+	{
+		console.log(boolean)
+		boolean ? this.incrementScore() : this.addToWrongAnswers()
+	}
+
 	setNextQuestion(index)
 	{
 			
@@ -63,13 +84,6 @@ class QuizModal extends Component
 			currentQuestion: this.state.questions[index].question,
 			currentOptions: this.state.questions[index].options
 		})
-	}
-
-
-	componentDidMount()
-	{
-		
-		//this.setNextQuestion(0)
 	}
 
 			
@@ -89,7 +103,7 @@ class QuizModal extends Component
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
 
-							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} handler={() => this.setFeedback(option.feedback)} feedback={option.feedback} isTrue={option.isTrue} text={option.content} />
+							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} handler={() => this.setFeedback(option.feedback)} feedback={option.feedback} handleResponse={() => this.handleResponse(option.isTrue)} isTrue={option.isTrue} text={option.content} />
 				
 						))
 					}
