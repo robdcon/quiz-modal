@@ -4,6 +4,8 @@ import Question from '../components/Question'
 import OptionsList from '../components/OptionsList'
 import QuestionContainer from '../components/QuestionContainer'
 import Feedback from '../components/Feedback'
+import NextButton from '../components/NextButton'
+import Counter from '../components/Counter'
 
 
 class QuizModal extends Component 
@@ -16,49 +18,61 @@ class QuizModal extends Component
 			active:true,
 			questions: props.questions,
 			answers:[],
-			currentQuestion: "Whats you name?",
-			currentOptions: ["dunno", "what have you taken", "feck off"],
-			currentIndex:0
+			currentQuestion: props.questions[0].question,
+			currentOptions: props.questions[0].options,
+			selectedOptionFeedback: "",
+			currentIndex:0,
+			quizLength: props.questions.length
 		}
+
+		this.setNextQuestion = this.setNextQuestion.bind(this);
+		this.incrementCurrent = this.incrementCurrent.bind(this);
 	}
 
-	getCurrent()
-	{
-		let current = this.state.currentIndex
-		return current
-	}
+	// getCurrent()
+	// {
+	// 	let current = this.state.currentIndex
+	// 	return current
+	// }
 
-	giveFeedback(e)
+	incrementCurrent()
 	{
-		console.log(e)
-		return e
 		
+		this.setState((prevState) => ({
+		
+			currentIndex: prevState.currentIndex + 1
+		}))
+		this.setNextQuestion(this.state.currentIndex)
+
 	}
 
-	setNextQuestion()
+	setFeedback(message)
 	{
 		this.setState({
 
-			currentIndex: this.state.currentIndex++
+			selectedOptionFeedback: message
+		})
+		
+	}
+
+	setNextQuestion(index)
+	{
+			
+		this.setState({
+
+			currentQuestion: this.state.questions[index].question,
+			currentOptions: this.state.questions[index].options
 		})
 	}
 
 
 	componentDidMount()
 	{
-		let index = this.getCurrent()
-		this.setState({
-
-				currentQuestion: this.state.questions[index].question,
-				currentOptions: this.state.questions[index].options
-
-		})
-
-
-
+		
+		//this.setNextQuestion(0)
 	}
-			
 
+			
 	render()
 	{
 		return(
@@ -75,15 +89,18 @@ class QuizModal extends Component
 						this.state.currentOptions.map((option, key) =>
 						(
 
-							<OptionButton  key={"q=" + this.getCurrent() + "-o-" + key} handler={() => this.giveFeedback(option.feedback)} feedback={option.feedback} isTrue={option.isTrue} text={option.content} />
+							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} handler={() => this.setFeedback(option.feedback)} feedback={option.feedback} isTrue={option.isTrue} text={option.content} />
 				
 						))
 					}
 					</OptionsList>
 
 					
-
 				</QuestionContainer>
+
+				<Feedback message={this.state.selectedOptionFeedback} />
+				<NextButton handler={this.incrementCurrent}/>
+				<Counter  count={this.state.currentIndex} total={this.state.quizLength} />
 				
 			</div>
 		)

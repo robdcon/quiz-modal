@@ -32,7 +32,7 @@ var quizQuestions = [
   },
   {
       question: "How much do you want to spend?",
-      label: "Question One",
+      label: "Question Two",
       options: [
           {
               isTrue: true,

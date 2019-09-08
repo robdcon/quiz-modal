@@ -7,7 +7,7 @@ const Feedback = (props) =>
 		<div className="feedback">
 
 			<h3>{props.isTrue ? "Well done! That's Correct" : "Sorry thats incorrect"}</h3>
-			<p>{props.feedback}</p>
+			<p>{props.message}</p>
 			{props.children}
 			
 		</div>
