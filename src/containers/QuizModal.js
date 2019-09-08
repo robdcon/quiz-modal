@@ -17,7 +17,7 @@ class QuizModal extends Component
 		{
 			active:true,
 			questions: props.questions,
-			answers:[],
+			wrongAnswers:[],
 			currentQuestion: props.questions[0].question,
 			currentOptions: props.questions[0].options,
 			selectedOptionFeedback: "",
@@ -59,6 +59,11 @@ class QuizModal extends Component
 
 	addToWrongAnswers()
 	{
+
+		this.setState((prevState) => ({
+
+			wrongAnswers: this.state.wrongAnswers.concat(this.state.currentIndex)
+		}))
 		console.log('wrong answer')
 	}
 
