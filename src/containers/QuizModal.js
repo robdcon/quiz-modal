@@ -42,7 +42,6 @@ class QuizModal extends Component
 		
 			currentIndex: prevState.currentIndex + 1
 		}))
-		this.setNextQuestion(this.state.currentIndex)
 
 	}
 
@@ -81,12 +80,12 @@ class QuizModal extends Component
 
 				<QuestionContainer>
 					
-					<Question  text={this.state.currentQuestion}/>
+					<Question  text={this.state.questions[this.state.currentIndex].question}/>
 							
 					<OptionsList>
 					{
 
-						this.state.currentOptions.map((option, key) =>
+						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
 
 							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} handler={() => this.setFeedback(option.feedback)} feedback={option.feedback} isTrue={option.isTrue} text={option.content} />
