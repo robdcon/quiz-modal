@@ -35,12 +35,13 @@ class QuizModal extends Component
 	// 	return current
 	// }
 
+	
 	incrementCurrent()
 	{
 		
 		this.setState((prevState) => ({
 		
-			currentIndex: prevState.currentIndex + 1
+			currentIndex: prevState.currentIndex + 1 >= this.state.quizLength ? 0 : prevState.currentIndex + 1 
 		}))
 
 	}
