@@ -8,7 +8,7 @@ const OptionButton = (props) =>
 
 			
 			<div>			
-				<button className="btn option" onClick={props.handler, props.handleResponse}>{props.text}</button>
+				<button className="btn option" onClick={props.handler}>{props.text}</button>
 			</div>
 
 		)

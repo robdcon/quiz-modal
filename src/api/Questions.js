@@ -4,12 +4,12 @@ var quizQuestions = [
       label: "Question One",
       options: [
           {
-              isTrue: false,
+              isTrue: true,
               content: "Blog",
               feedback: "this is the feedback on your answer 01"
           },
           {
-              isTrue: true,
+              isTrue: false,
               content: "Business",
               feedback: "this is the feedback on your answer 02"
           },

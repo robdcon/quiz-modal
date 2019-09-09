@@ -63,6 +63,7 @@ class QuizModal extends Component
 		this.setState((prevState) => ({
 
 			wrongAnswers: this.state.wrongAnswers.concat(this.state.currentIndex)
+			//wrongAnswers: !this.state.wrongAnswers.includes(this.state.currentIndex) ? [...this.state.wrongAnswers, this.state.currentIndex] : this.state.wrongAnswers
 		}))
 		console.log('wrong answer')
 	}
@@ -75,10 +76,11 @@ class QuizModal extends Component
 		}))
 	}
 
-	handleResponse = (boolean) =>
+	handleResponse = (boolean, response) =>
 	{
 		console.log(boolean)
 		boolean ? this.incrementScore() : this.addToWrongAnswers()
+		this.setFeedback(response)
 	}
 
 	setNextQuestion(index)
@@ -108,7 +110,7 @@ class QuizModal extends Component
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
 
-							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} handler={() => this.setFeedback(option.feedback)} feedback={option.feedback} handleResponse={() => this.handleResponse(option.isTrue)} isTrue={option.isTrue} text={option.content} />
+							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={() => this.handleResponse(option.isTrue, option.feedback)} isTrue={option.isTrue} text={option.content} />
 				
 						))
 					}
