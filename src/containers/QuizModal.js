@@ -17,7 +17,9 @@ class QuizModal extends Component
 		{
 			active:true,
 			questions: props.questions,
-			wrongAnswers:[],
+			selectedAnswers: [],
+			correctAnswers: [],
+			incorrectAnswers: [],
 			currentQuestion: props.questions[0].question,
 			currentOptions: props.questions[0].options,
 			selectedOptionFeedback: "",
@@ -57,13 +59,22 @@ class QuizModal extends Component
 		})
 	}
 
-	addToWrongAnswers()
+	addToIncorrectAnswers()
 	{
 
 		this.setState((prevState) => ({
 
-			wrongAnswers: this.state.wrongAnswers.concat(this.state.currentIndex)
-			//wrongAnswers: !this.state.wrongAnswers.includes(this.state.currentIndex) ? [...this.state.wrongAnswers, this.state.currentIndex] : this.state.wrongAnswers
+			incorrectAnswers: !this.state.incorrectAnswers.includes(this.state.currentIndex) && !this.state.correctAnswers.includes(this.state.currentIndex) ? [...this.state.incorrectAnswers, this.state.currentIndex] : this.state.incorrectAnswers
+		}))
+		console.log('wrong answer')
+	}
+
+	addToCorrectAnswers()
+	{
+
+		this.setState((prevState) => ({
+
+			correctAnswers: !this.state.correctAnswers.includes(this.state.currentIndex) && !this.state.incorrectAnswers.includes(this.state.currentIndex) ? [...this.state.correctAnswers, this.state.currentIndex] : this.state.correctAnswers
 		}))
 		console.log('wrong answer')
 	}
@@ -79,7 +90,7 @@ class QuizModal extends Component
 	handleResponse = (boolean, response) =>
 	{
 		console.log(boolean)
-		boolean ? this.incrementScore() : this.addToWrongAnswers()
+		boolean ? this.addToCorrectAnswers() : this.addToIncorrectAnswers()
 		this.setFeedback(response)
 	}
 
