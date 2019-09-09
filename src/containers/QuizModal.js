@@ -6,6 +6,8 @@ import QuestionContainer from '../components/QuestionContainer'
 import Feedback from '../components/Feedback'
 import NextButton from '../components/NextButton'
 import Counter from '../components/Counter'
+import WelcomeScreen from '../components/WelcomeScreen'
+import Score from '../components/Score'
 
 
 class QuizModal extends Component 
@@ -15,7 +17,10 @@ class QuizModal extends Component
 		super(props)
 		this.state = 
 		{
-			active:true,
+			active:false,
+			welcomeMessage: "Welcome",
+			resultMessage: "Finished",
+			quizFinished: false,
 			questions: props.questions,
 			selectedAnswers: [],
 			correctAnswers: [],
@@ -23,7 +28,7 @@ class QuizModal extends Component
 			currentQuestion: props.questions[0].question,
 			currentOptions: props.questions[0].options,
 			selectedOptionFeedback: "",
-			currentIndex:0,
+			currentIndex:-1,
 			quizLength: props.questions.length,
 			score: 0
 		}
@@ -37,7 +42,11 @@ class QuizModal extends Component
 		
 		this.setState((prevState) => ({
 		
-			currentIndex: prevState.currentIndex + 1 >= this.state.quizLength ? 0 : prevState.currentIndex + 1 
+			currentIndex: prevState.currentIndex + 1,
+			selectedOptionFeedback: "",
+			active: prevState.currentIndex + 1 === this.state.quizLength ? false : true,
+			quizFinished: prevState.currentIndex + 1 === this.state.quizLength ? true : false
+
 		}))
 
 	}
@@ -87,11 +96,19 @@ class QuizModal extends Component
 		}))
 	}
 
-	handleResponse = (boolean, response) =>
+	addClassToButton(e, boolean)
+	{
+		console.log(e)
+		boolean ? e.classList.add('correct') : e.classList.add('incorrect')
+		e.classList.add('selected')
+	}
+
+	handleResponse = (e, boolean, response) =>
 	{
 		console.log(boolean)
 		boolean ? this.addToCorrectAnswers() : this.addToIncorrectAnswers()
 		this.setFeedback(response)
+		this.addClassToButton(e.target, boolean)
 	}
 
 	setNextQuestion(index)
@@ -107,12 +124,14 @@ class QuizModal extends Component
 			
 	render()
 	{
+		//if(this.state.active){console.log('hello')}
 		return(
 
-			<div  id="question-wrapper" className="quiz-modal">
-
-				<QuestionContainer>
-					
+				<div  id="question-wrapper" className="quiz-modal">
+						
+					{
+					this.state.active ? ( <QuestionContainer>
+										
 					<Question  text={this.state.questions[this.state.currentIndex].question}/>
 							
 					<OptionsList>
@@ -121,20 +140,42 @@ class QuizModal extends Component
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
 
-							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={() => this.handleResponse(option.isTrue, option.feedback)} isTrue={option.isTrue} text={option.content} />
+							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content} />
 				
 						))
 					}
 					</OptionsList>
 
-					
-				</QuestionContainer>
+					<Feedback message={this.state.selectedOptionFeedback} />
+					<NextButton handler={this.incrementCurrent}/>
+					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
 
-				<Feedback message={this.state.selectedOptionFeedback} />
-				<NextButton handler={this.incrementCurrent}/>
-				<Counter  count={this.state.currentIndex} total={this.state.quizLength} />
-				
-			</div>
+					</QuestionContainer>
+					) : 
+					<div className="welcome-screen">
+						{
+							
+							this.state.quizFinished ? 
+							(	
+								<div>
+								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
+								<Score score={this.state.score} />
+								</div>
+								
+							) : 
+
+							(
+								<div>
+								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
+								<NextButton handler={this.incrementCurrent} />
+								</div>
+							)
+						}
+					</div>
+				}
+				</div>
+			
+			
 		)
 	}
 }

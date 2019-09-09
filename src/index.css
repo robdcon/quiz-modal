@@ -3,3 +3,13 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+
+.selected.correct
+{
+	background-color: #00ff0050;
+}
+
+.selected.incorrect
+{
+	background-color: #ff000050;
+}
