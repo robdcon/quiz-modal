@@ -121,6 +121,11 @@ class QuizModal extends Component
 		})
 	}
 
+	getScore()
+	{
+		return this.state.correctAnswers.length
+	}
+
 			
 	render()
 	{
@@ -159,7 +164,7 @@ class QuizModal extends Component
 							(	
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<Score score={this.state.score} />
+								<Score score={this.getScore()} />
 								</div>
 								
 							) : 
