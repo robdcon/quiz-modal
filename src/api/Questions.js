@@ -1,3 +1,5 @@
+var courseTitle = "Course Title"
+
 var quizQuestions = [
   {
       question: "What type of website do you have?",

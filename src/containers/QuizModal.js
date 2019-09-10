@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import OptionButton from '../components/OptionButton'
+import {OptionButton} from '../styled/OptionButton'
 import Question from '../components/Question'
 import OptionsList from '../components/OptionsList'
 import QuestionContainer from '../components/QuestionContainer'
@@ -8,6 +8,8 @@ import NextButton from '../components/NextButton'
 import Counter from '../components/Counter'
 import WelcomeScreen from '../components/WelcomeScreen'
 import Score from '../components/Score'
+import {StyledModal} from '../styled/StyledModal'
+//import {StyledButton} from '../styled/StyledButton'
 
 
 class QuizModal extends Component 
@@ -20,6 +22,7 @@ class QuizModal extends Component
 			active:false,
 			welcomeMessage: "Welcome",
 			resultMessage: "Finished",
+			questionResultMessage: "",
 			quizFinished: false,
 			questions: props.questions,
 			selectedAnswers: [],
@@ -103,12 +106,20 @@ class QuizModal extends Component
 		e.classList.add('selected')
 	}
 
+	setQuestionResultMessage(boolean)
+	{
+		this.setState({
+			questionResultMessage: boolean ? 'Correct' : 'Incorrect'
+		})
+	}
+
 	handleResponse = (e, boolean, response) =>
 	{
 		console.log(boolean)
 		boolean ? this.addToCorrectAnswers() : this.addToIncorrectAnswers()
 		this.setFeedback(response)
 		this.addClassToButton(e.target, boolean)
+		this.setQuestionResultMessage(boolean)
 	}
 
 	setNextQuestion(index)
@@ -131,8 +142,10 @@ class QuizModal extends Component
 	{
 		//if(this.state.active){console.log('hello')}
 		return(
+			
+			<StyledModal>
 
-				<div  id="question-wrapper" className="quiz-modal">
+		
 						
 					{
 					this.state.active ? ( <QuestionContainer>
@@ -144,14 +157,14 @@ class QuizModal extends Component
 
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
-
+							
 							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content} />
-				
+							
 						))
 					}
 					</OptionsList>
 
-					<Feedback message={this.state.selectedOptionFeedback} />
+					<Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} />
 					<NextButton handler={this.incrementCurrent}/>
 					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
 
@@ -178,8 +191,9 @@ class QuizModal extends Component
 						}
 					</div>
 				}
-				</div>
 			
+
+			</StyledModal>
 			
 		)
 	}
