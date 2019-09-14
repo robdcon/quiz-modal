@@ -1,3 +1,5 @@
+
+
 var courseTitle = "Course Title"
 
 var quizQuestions = [

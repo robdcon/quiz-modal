@@ -12,6 +12,7 @@ import {StyledModal} from '../styled/StyledModal'
 import {TweenComponent} from '../components/TweenComponent'
 import TweenLite from "gsap";
 import { Tween, Timeline } from 'react-gsap'
+import axios from 'axios'
 
 
 //import {StyledButton} from '../styled/StyledButton'
@@ -41,7 +42,9 @@ class QuizModal extends Component
 			score: 0,
 			tween: TweenLite,
 			btnElements:[],
-			animateOptions: true
+			animateOptions: true,
+			feedbackActive: false
+			
 			
 		}
 		
@@ -52,16 +55,20 @@ class QuizModal extends Component
 	
 	incrementCurrent()
 	{
-		
+
 		this.setState((prevState) => ({
 		
 			currentIndex: prevState.currentIndex + 1,
 			selectedOptionFeedback: "",
 			active: prevState.currentIndex + 1 === this.state.quizLength ? false : true,
 			quizFinished: prevState.currentIndex + 1 === this.state.quizLength ? true : false,
-			animateOptions: true
+			animateOptions: true,
+			feedbackActive:false,
+			currentQuestion: prevState.currentIndex + 1 === this.state.quizLength ? "" : this.state.trivia[prevState.currentIndex + 1].question,
+			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : [...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]
 
 		}))
+		//this.setNextQuestion(this.state.currentIndex)
 
 
 
@@ -134,6 +141,7 @@ class QuizModal extends Component
 		this.setFeedback(response)
 		this.addClassToButton(e.target, boolean)
 		this.setQuestionResultMessage(boolean)
+		this.setState({feedbackActive:true})
 	}
 
 	setNextQuestion(index)
@@ -141,8 +149,8 @@ class QuizModal extends Component
 			
 		this.setState({
 
-			currentQuestion: this.state.questions[index].question,
-			currentOptions: this.state.questions[index].options
+			currentQuestion: this.state.trivia[index].question,
+			currentOptions: this.state.trivia[index].incorrect_answers
 		})
 	}
 
@@ -171,13 +179,17 @@ class QuizModal extends Component
 		
 	}
 	
-	// componentDidMount()
-	// {
-		
-		
-	// 	console.log(TweenLite)
+	componentDidMount()
+	{	
+		const Trivia = axios.get('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
+		Trivia.then((res) => this.setState({
 
-	// }
+			trivia:res.data.results,
+			quizLength: res.data.results.length
+		}))
+		
+
+	}
 
 
 	componentDidUpdate()
@@ -201,27 +213,27 @@ class QuizModal extends Component
 						
 					{
 
-					this.state.active ? ( <QuestionContainer>
+				this.state.active ? ( <QuestionContainer>
 										
-					<Question  text={this.state.questions[this.state.currentIndex].question}/>
+					<Question  text={this.state.currentQuestion}/>
 							
 					<OptionsList>
 					{
 						
-						this.state.questions[this.state.currentIndex].options.map((option, key) =>
+						this.state.currentOptions.map((option, key) =>
 						(
 
-								<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content}>
+								<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option}>
 								</OptionButton>
 							
 						))
-
+						
 					
 					}
 					</OptionsList>
 
-					<Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} />
-					<NextButton handler={this.incrementCurrent}/>
+				{this.state.feedbackActive ? <Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} /> : <div></div>}
+					
 					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
 
 					</QuestionContainer>
@@ -241,13 +253,12 @@ class QuizModal extends Component
 							(
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<NextButton handler={this.incrementCurrent} />
 								</div>
 							)
 						}
 					</div>
 				}
-			
+				<NextButton  text="NEXT" handler={this.incrementCurrent}/>
 
 			</StyledModal>
 			
