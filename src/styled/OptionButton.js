@@ -1,5 +1,6 @@
 import styled from 'styled-components'
-import React from 'react'
+import React , {Component} from 'react'
+import { Tween, Timeline } from 'react-gsap';
 
 const StyledButton = styled.button`
 	
@@ -16,17 +17,32 @@ const StyledButton = styled.button`
 
 `
 
-export const OptionButton = (props) =>
+export class OptionButton extends React.Component
 {
-	
-	return(
-		
-					
-		<StyledButton  className="btn option" onClick={props.handler}>
-			{props.text}
-		</StyledButton>
+	constructor(props)
+	{
+		super(props)
+		this.btnRef = React.createRef()
+	}
 
-	)
+	render()
+	{
+		return(
+		
+			
+			<StyledButton ref={this.btnRef} className="btn option" onClick={this.props.handler}>
+			
+				{this.props.text}
+				{this.props.children}
+			</StyledButton>
+			
+		
+
+			)
+	}
+	
 	
 }
+
+
 

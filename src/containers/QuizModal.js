@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component, useEffect, uesRef} from 'react'
 import {OptionButton} from '../styled/OptionButton'
 import Question from '../components/Question'
 import OptionsList from '../components/OptionsList'
@@ -9,6 +9,11 @@ import Counter from '../components/Counter'
 import WelcomeScreen from '../components/WelcomeScreen'
 import Score from '../components/Score'
 import {StyledModal} from '../styled/StyledModal'
+import {TweenComponent} from '../components/TweenComponent'
+import TweenLite from "gsap";
+import { Tween, Timeline } from 'react-gsap'
+
+
 //import {StyledButton} from '../styled/StyledButton'
 
 
@@ -33,9 +38,12 @@ class QuizModal extends Component
 			selectedOptionFeedback: "",
 			currentIndex:-1,
 			quizLength: props.questions.length,
-			score: 0
+			score: 0,
+			tween: TweenLite,
+			
 		}
-
+		
+		this.myElements = []
 		this.setNextQuestion = this.setNextQuestion.bind(this);
 		this.incrementCurrent = this.incrementCurrent.bind(this);
 	}
@@ -137,6 +145,29 @@ class QuizModal extends Component
 		return this.state.correctAnswers.length
 	}
 
+	animateOptions(options)
+	{
+		
+		console.log("options:",options)
+
+		return TweenLite.staggerFrom(options, .5, {y:'100px', opacity:0}, .05)
+	}
+
+	// componentDidMount()
+	// {
+		
+		
+	// 	console.log(TweenLite)
+
+	// }
+
+	componentDidUpdate()
+	{
+		const options = this.myElements
+		if(options){this.animateOptions(options)}
+		//console.log(this.myElements)
+	}
+
 			
 	render()
 	{
@@ -157,8 +188,11 @@ class QuizModal extends Component
 
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
-							
-							<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content} />
+							<div ref={div => this.myElements.push(div)} key={"q=" + this.state.currentIndex + "-a-" + key}>
+								<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content}>
+								{/*<div>test div</div>*/}
+								</OptionButton>
+							</div>
 							
 						))
 					}
