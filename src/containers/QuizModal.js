@@ -40,6 +40,8 @@ class QuizModal extends Component
 			quizLength: props.questions.length,
 			score: 0,
 			tween: TweenLite,
+			btnElements:[],
+			animateOptions: true
 			
 		}
 		
@@ -56,9 +58,13 @@ class QuizModal extends Component
 			currentIndex: prevState.currentIndex + 1,
 			selectedOptionFeedback: "",
 			active: prevState.currentIndex + 1 === this.state.quizLength ? false : true,
-			quizFinished: prevState.currentIndex + 1 === this.state.quizLength ? true : false
+			quizFinished: prevState.currentIndex + 1 === this.state.quizLength ? true : false,
+			animateOptions: true
 
 		}))
+
+
+
 
 	}
 
@@ -140,19 +146,31 @@ class QuizModal extends Component
 		})
 	}
 
+	reset()
+	{
+		this.myElements = []
+	}
+
 	getScore()
 	{
 		return this.state.correctAnswers.length
 	}
 
-	animateOptions(options)
+	animateOptions()
 	{
 		
-		console.log("options:",options)
+		
+		// this.reset()
+		console.log(this.myElements)
+		TweenLite.staggerFrom('.option', .5, {y:'100px', opacity:0}, .05)
+		this.setState({
 
-		return TweenLite.staggerFrom(options, .5, {y:'100px', opacity:0}, .05)
+			animateOptions:false
+		})
+
+		
 	}
-
+	
 	// componentDidMount()
 	// {
 		
@@ -161,10 +179,13 @@ class QuizModal extends Component
 
 	// }
 
+
 	componentDidUpdate()
 	{
-		const options = this.myElements
-		if(options){this.animateOptions(options)}
+		
+	if (this.state.animateOptions)
+		{this.animateOptions()}
+		
 		//console.log(this.myElements)
 	}
 
@@ -179,22 +200,23 @@ class QuizModal extends Component
 		
 						
 					{
+
 					this.state.active ? ( <QuestionContainer>
 										
 					<Question  text={this.state.questions[this.state.currentIndex].question}/>
 							
 					<OptionsList>
 					{
-
+						
 						this.state.questions[this.state.currentIndex].options.map((option, key) =>
 						(
-							<div ref={div => this.myElements.push(div)} key={"q=" + this.state.currentIndex + "-a-" + key}>
+
 								<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option.content}>
-								{/*<div>test div</div>*/}
-								</OptionButton>
-							</div>
+								</OptionButton>
 							
 						))
+
+					
 					}
 					</OptionsList>
 
