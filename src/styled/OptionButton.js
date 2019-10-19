@@ -14,6 +14,8 @@ const StyledButton = styled.button`
     border: 1px solid rgb(255, 255, 255);
     padding: 1em;
     margin: .125em auto;
+    box-shadow: 0px 4px 10px 1px #00000050;
+    text-align:center;
 
 `
 

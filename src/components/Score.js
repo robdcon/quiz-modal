@@ -6,9 +6,10 @@ const Score = (props) =>
 	return(
 
 		
-		<div>			
+		<div>
+			{props.children}			
 			<p>{props.score}</p>
-			{props.children}
+			
 		</div>
 
 	)

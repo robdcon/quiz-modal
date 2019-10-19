@@ -13,6 +13,7 @@ import {TweenComponent} from '../components/TweenComponent'
 import TweenLite from "gsap";
 import { Tween, Timeline } from 'react-gsap'
 import axios from 'axios'
+import {negativeFeedbackMessages, positiveFeedbackMessages} from '../api/FeedbackMessages'
 
 
 //import {StyledButton} from '../styled/StyledButton'
@@ -43,7 +44,11 @@ class QuizModal extends Component
 			tween: TweenLite,
 			btnElements:[],
 			animateOptions: true,
-			feedbackActive: false
+			feedbackMessages:"",
+			feedbackActive: false,
+			feedbackType: 'negative',
+			guesses: 0
+
 			
 			
 		}
@@ -65,7 +70,10 @@ class QuizModal extends Component
 			animateOptions: true,
 			feedbackActive:false,
 			currentQuestion: prevState.currentIndex + 1 === this.state.quizLength ? "" : this.state.trivia[prevState.currentIndex + 1].question,
-			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : [...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]
+			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : [...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer],
+			currentCorrectAnswer:  prevState.currentIndex + 1 === this.state.quizLength ? "" :  this.state.trivia[prevState.currentIndex + 1].correct_answer,
+			guesses: 0
+
 
 		}))
 		//this.setNextQuestion(this.state.currentIndex)
@@ -120,6 +128,14 @@ class QuizModal extends Component
 		}))
 	}
 
+	incrementGuesses()
+	{
+		this.setState((prevState) => ({
+
+			guesses: prevState.guesses + 1
+		}))
+	}
+
 	addClassToButton(e, boolean)
 	{
 		console.log(e)
@@ -137,11 +153,15 @@ class QuizModal extends Component
 	handleResponse = (e, boolean, response) =>
 	{
 		console.log(boolean)
+		let message = boolean ? positiveFeedbackMessages[0][this.setFeedbackMessage(this.state.guesses)] :
+								negativeFeedbackMessages[0][this.setFeedbackMessage(this.state.guesses)]
+
 		boolean ? this.addToCorrectAnswers() : this.addToIncorrectAnswers()
-		this.setFeedback(response)
+		this.setFeedback(message)
 		this.addClassToButton(e.target, boolean)
 		this.setQuestionResultMessage(boolean)
 		this.setState({feedbackActive:true})
+		this.incrementGuesses()
 	}
 
 	setNextQuestion(index)
@@ -152,6 +172,23 @@ class QuizModal extends Component
 			currentQuestion: this.state.trivia[index].question,
 			currentOptions: this.state.trivia[index].incorrect_answers
 		})
+	}
+
+	setFeedbackMessage(guesses) // Sets harshness of response according to number of guesses
+	{
+		let message
+		switch(guesses)
+		{
+
+			case 0: message = 'soft'; break;
+			case 1: message = 'fair'; break;
+			case 2: message = 'strong'; break;
+			case 3: message = 'harsh'; break;
+			case 4: message = 'offensive'; break;
+			default: message = 'offensive'
+
+		}
+		return message
 	}
 
 	reset()
@@ -185,7 +222,8 @@ class QuizModal extends Component
 		Trivia.then((res) => this.setState({
 
 			trivia:res.data.results,
-			quizLength: res.data.results.length
+			quizLength: res.data.results.length,
+			feedbackMessages: positiveFeedbackMessages[0]
 		}))
 		
 
@@ -223,8 +261,15 @@ class QuizModal extends Component
 						this.state.currentOptions.map((option, key) =>
 						(
 
-								<OptionButton  key={"q=" + this.state.currentIndex + "-o-" + key} feedback={option.feedback} handler={(e) => {this.handleResponse(e, option.isTrue, option.feedback)  } } isTrue={option.isTrue} text={option}>
-								</OptionButton>
+								<OptionButton 
+
+									key={"q=" + this.state.currentIndex + "-o-" + key} 
+									feedback={option.feedback} 
+									handler={(e) => {let isTrue = (option === this.state.currentCorrectAnswer ? true : false); this.handleResponse(e, isTrue, option.feedback)  } } 
+									isTrue={option === this.state.currentCorrectAnswer ? true : false} 
+									text={option}>
+
+							</OptionButton>
 							
 						))
 						
@@ -232,8 +277,11 @@ class QuizModal extends Component
 					}
 					</OptionsList>
 
+
 				{this.state.feedbackActive ? <Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} /> : <div></div>}
 					
+					<NextButton  text="NEXT" handler={this.incrementCurrent}/>
+
 					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
 
 					</QuestionContainer>
@@ -245,7 +293,10 @@ class QuizModal extends Component
 							(	
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<Score score={this.getScore()} />
+								<Score score={this.getScore()}>
+									<h2>Your score is</h2>
+								</Score>
+								<NextButton  text="START AGAIN" handler={this.incrementCurrent}/>
 								</div>
 								
 							) : 
@@ -253,12 +304,13 @@ class QuizModal extends Component
 							(
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
+								<NextButton  text="NEXT" handler={this.incrementCurrent}/>
 								</div>
 							)
 						}
 					</div>
 				}
-				<NextButton  text="NEXT" handler={this.incrementCurrent}/>
+				
 
 			</StyledModal>
 			

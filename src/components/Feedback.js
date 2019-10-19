@@ -5,7 +5,7 @@ import { Tween, Timeline } from 'react-gsap';
 const StyledDiv = styled.div`
 		
 	
-	width: 100%;
+	
 	font-family: Overpass;
     color: rgba(0, 0, 0, 0.8);
     font-size: 14px;
@@ -15,6 +15,7 @@ const StyledDiv = styled.div`
     border: 1px solid rgb(255, 255, 255);
     padding: 1em;
     margin: .125em auto;
+    text-align: center;
 
 `
 
