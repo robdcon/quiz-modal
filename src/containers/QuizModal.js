@@ -83,6 +83,19 @@ class QuizModal extends Component
 
 	}
 
+	randomNumber(max)
+	{
+		let random = 0
+		do
+		{
+			random = Math.floor(Math.random() * 10)
+			
+		}
+		while(random >= max)
+		console.log("random: ", random)
+		return random
+	}
+
 	setFeedback(message)
 	{
 		this.setState({
@@ -153,8 +166,8 @@ class QuizModal extends Component
 	handleResponse = (e, boolean, response) =>
 	{
 		console.log(boolean)
-		let message = boolean ? positiveFeedbackMessages[0][this.setFeedbackMessage(this.state.guesses)] :
-								negativeFeedbackMessages[0][this.setFeedbackMessage(this.state.guesses)]
+		let message = boolean ? positiveFeedbackMessages[this.randomNumber(positiveFeedbackMessages.length)][this.setFeedbackMessage(this.state.guesses)] :
+								negativeFeedbackMessages[this.randomNumber(negativeFeedbackMessages.length)][this.setFeedbackMessage(this.state.guesses)]
 
 		boolean ? this.addToCorrectAnswers() : this.addToIncorrectAnswers()
 		this.setFeedback(message)
@@ -225,6 +238,14 @@ class QuizModal extends Component
 			quizLength: res.data.results.length,
 			feedbackMessages: positiveFeedbackMessages[0]
 		}))
+
+		this.randomNumber(3)
+		this.randomNumber(3)
+		this.randomNumber(3)
+		this.randomNumber(3)
+		this.randomNumber(3)
+		this.randomNumber(3)
+
 		
 
 	}
