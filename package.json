@@ -1,4 +1,5 @@
 {
+  "homepage": "http://robdcon.github.io/quiz-modal",
   "name": "quiz-modal",
   "version": "0.1.0",
   "private": true,
@@ -18,13 +19,16 @@
     "styled-components": "^4.3.2"
   },
   "devDependencies": {
-    "case-sensitive-paths-webpack-plugin": "^2.2.0"
+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
+    "gh-pages": "^2.1.1"
   },
   "proxy": "http://localhost:8080",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   }
 }
