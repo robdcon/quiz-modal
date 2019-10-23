@@ -16,6 +16,7 @@ import axios from 'axios'
 import {negativeFeedbackMessages, positiveFeedbackMessages} from '../api/FeedbackMessages'
 
 
+
 //import {StyledButton} from '../styled/StyledButton'
 
 
@@ -39,7 +40,7 @@ class QuizModal extends Component
 			currentOptions: props.questions[0].options,
 			selectedOptionFeedback: "",
 			currentIndex:-1,
-			quizLength: props.questions.length,
+			quizLength: 10,
 			score: 0,
 			tween: TweenLite,
 			btnElements:[],
@@ -47,7 +48,12 @@ class QuizModal extends Component
 			feedbackMessages:"",
 			feedbackActive: false,
 			feedbackType: 'negative',
-			guesses: 0
+			guesses: 0,
+			difficulties: {
+				0:'easy',
+				1:'medium',
+				2:'hard'
+			}
 
 			
 			
@@ -56,6 +62,30 @@ class QuizModal extends Component
 		this.myElements = []
 		this.setNextQuestion = this.setNextQuestion.bind(this);
 		this.incrementCurrent = this.incrementCurrent.bind(this);
+		this.resetQuiz = this.resetQuiz.bind(this);
+	}
+
+
+
+	resetQuiz()
+	{
+		
+		
+		const triviaUrl = `https://opentdb.com/api.php?amount=10&type=multiple&encode=url3986`
+		const Trivia = axios.get(triviaUrl)
+
+		console.log(Trivia)
+
+		Trivia.then((res) => this.setState({
+
+			trivia:res.data.results,
+			quizLength: res.data.results.length,
+			feedbackMessages: positiveFeedbackMessages[0],
+			active:false,
+			quizFinished: false,
+			currentIndex:-1
+		}))
+		
 	}
 	
 	incrementCurrent()
@@ -70,7 +100,7 @@ class QuizModal extends Component
 			animateOptions: true,
 			feedbackActive:false,
 			currentQuestion: prevState.currentIndex + 1 === this.state.quizLength ? "" : this.state.trivia[prevState.currentIndex + 1].question,
-			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : [...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer],
+			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : this.shuffle([...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]),
 			currentCorrectAnswer:  prevState.currentIndex + 1 === this.state.quizLength ? "" :  this.state.trivia[prevState.currentIndex + 1].correct_answer,
 			guesses: 0
 
@@ -81,6 +111,26 @@ class QuizModal extends Component
 
 
 
+	}
+
+	shuffle(array) 
+	{
+		var currentIndex = array.length, temporaryValue, randomIndex;
+	  
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+	  
+		  // Pick a remaining element...
+		  randomIndex = Math.floor(Math.random() * currentIndex);
+		  currentIndex -= 1;
+	  
+		  // And swap it with the current element.
+		  temporaryValue = array[currentIndex];
+		  array[currentIndex] = array[randomIndex];
+		  array[randomIndex] = temporaryValue;
+		}
+	  
+		return array;
 	}
 
 	randomNumber(max)
@@ -232,7 +282,12 @@ class QuizModal extends Component
 	// Set parameters for quiz API
 	getQuiz(numQuestions, category, difficulty, quiztype)
 	{
-		const Trivia = axios.get(`https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quiztype}`)
+		const triviaUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quiztype}`
+		
+		const Trivia = axios.get(triviaUrl)
+
+		console.log(Trivia)
+
 		Trivia.then((res) => this.setState({
 
 			trivia:res.data.results,
@@ -243,20 +298,17 @@ class QuizModal extends Component
 	
 	componentDidMount()
 	{	
-		const Trivia = axios.get('https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple')
+		const triviaUrl = `https://opentdb.com/api.php?amount=10&type=multiple&encode=url3986`
+		const Trivia = axios.get(triviaUrl)
+
+		console.log(Trivia)
+
 		Trivia.then((res) => this.setState({
 
 			trivia:res.data.results,
 			quizLength: res.data.results.length,
 			feedbackMessages: positiveFeedbackMessages[0]
 		}))
-
-		this.randomNumber(3)
-		this.randomNumber(3)
-		this.randomNumber(3)
-		this.randomNumber(3)
-		this.randomNumber(3)
-		this.randomNumber(3)
 
 		
 
@@ -286,7 +338,7 @@ class QuizModal extends Component
 
 				this.state.active ? ( <QuestionContainer>
 										
-					<Question  text={this.state.currentQuestion}/>
+					<Question  text={decodeURIComponent(this.state.currentQuestion)}/>
 							
 					<OptionsList>
 					{
@@ -300,7 +352,7 @@ class QuizModal extends Component
 									feedback={option.feedback} 
 									handler={(e) => {let isTrue = (option === this.state.currentCorrectAnswer ? true : false); this.handleResponse(e, isTrue, option.feedback)  } } 
 									isTrue={option === this.state.currentCorrectAnswer ? true : false} 
-									text={option}>
+									text={decodeURIComponent(option)}>
 
 							</OptionButton>
 							
@@ -329,7 +381,7 @@ class QuizModal extends Component
 								<Score score={this.getScore()}>
 									<h2>Your score is</h2>
 								</Score>
-								<NextButton  text="START AGAIN" handler={this.incrementCurrent}/>
+								<NextButton  text="START AGAIN" handler={this.resetQuiz}/>
 								</div>
 								
 							) : 
