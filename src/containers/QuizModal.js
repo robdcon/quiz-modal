@@ -228,6 +228,18 @@ class QuizModal extends Component
 
 		
 	}
+
+	// Set parameters for quiz API
+	getQuiz(numQuestions, category, difficulty, quiztype)
+	{
+		const Trivia = axios.get(`https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quiztype}`)
+		Trivia.then((res) => this.setState({
+
+			trivia:res.data.results,
+			quizLength: res.data.results.length,
+			feedbackMessages: positiveFeedbackMessages[0]
+		}))
+	}
 	
 	componentDidMount()
 	{	
