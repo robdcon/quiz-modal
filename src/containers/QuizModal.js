@@ -14,6 +14,7 @@ import TweenLite from "gsap";
 import { Tween, Timeline } from 'react-gsap'
 import axios from 'axios'
 import {negativeFeedbackMessages, positiveFeedbackMessages} from '../api/FeedbackMessages'
+import MultipleSelect from '../components/MultipleSelect'
 
 
 
@@ -32,15 +33,15 @@ class QuizModal extends Component
 			resultMessage: "Finished",
 			questionResultMessage: "",
 			quizFinished: false,
-			questions: props.questions,
+			// questions: props.questions,
 			selectedAnswers: [],
 			correctAnswers: [],
 			incorrectAnswers: [],
-			currentQuestion: props.questions[0].question,
-			currentOptions: props.questions[0].options,
+			currentQuestion: "",
+			currentOptions: [],
 			selectedOptionFeedback: "",
 			currentIndex:-1,
-			quizLength: 10,
+			quizLength: 5,
 			score: 0,
 			tween: TweenLite,
 			btnElements:[],
@@ -49,11 +50,17 @@ class QuizModal extends Component
 			feedbackActive: false,
 			feedbackType: 'negative',
 			guesses: 0,
-			difficulties: {
-				0:'easy',
-				1:'medium',
-				2:'hard'
-			}
+			difficulties: [
+				'easy',
+				'medium',
+				'hard'
+			],
+			categories:[],
+			category:10,
+			difficulty:"easy",
+			quizType: "multiple",
+			numQuestions:5,
+			trivia: null
 
 			
 			
@@ -63,28 +70,76 @@ class QuizModal extends Component
 		this.setNextQuestion = this.setNextQuestion.bind(this);
 		this.incrementCurrent = this.incrementCurrent.bind(this);
 		this.resetQuiz = this.resetQuiz.bind(this);
+		this.startQuiz = this.startQuiz.bind(this);
+		
 	}
 
-
+	
 
 	resetQuiz()
-	{
-		
-		
-		const triviaUrl = `https://opentdb.com/api.php?amount=10&type=multiple&encode=url3986`
-		const Trivia = axios.get(triviaUrl)
+	{		
+	
+		this.setState({
 
-		console.log(Trivia)
-
-		Trivia.then((res) => this.setState({
-
-			trivia:res.data.results,
-			quizLength: res.data.results.length,
+			trivia:null,
 			feedbackMessages: positiveFeedbackMessages[0],
 			active:false,
 			quizFinished: false,
 			currentIndex:-1
-		}))
+		})
+		
+	}
+
+	async getQuiz()
+	{
+		const numQuestions = this.state.numQuestions
+		const category = this.state.category
+		const difficulty = this.state.difficulty
+		const quizType = this.state.quizType
+
+		const triviaUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quizType}&encode=url3986`
+		
+		const Trivia = await axios.get(triviaUrl)
+		console.log('getQuiz')
+		return Trivia
+
+		
+	}
+
+
+
+	async startQuiz()
+	{
+		const triviaData = await this.getQuiz()
+		.then((res) => 
+		{
+			console.log('set trivia')
+			this.setState({
+
+				trivia: res.data.results
+			})
+			
+		})
+		.then(() => this.setNextQuestion(this.state.currentIndex + 1))
+		.then(() =>
+		{
+			console.log('set active')
+			console.log(this.state.trivia)
+			console.log('StartQuiz')
+			this.setState({
+
+				active: true,
+				currentIndex: 0
+			})
+			
+		})
+			
+		// 	triviaData.then((res) => {
+				
+		// 		
+		// })	
+		
+		
 		
 	}
 	
@@ -180,7 +235,7 @@ class QuizModal extends Component
 
 			correctAnswers: !this.state.correctAnswers.includes(this.state.currentIndex) && !this.state.incorrectAnswers.includes(this.state.currentIndex) ? [...this.state.correctAnswers, this.state.currentIndex] : this.state.correctAnswers
 		}))
-		console.log('wrong answer')
+		console.log('right answer')
 	}
 
 	incrementScore()
@@ -279,36 +334,37 @@ class QuizModal extends Component
 		
 	}
 
-	// Set parameters for quiz API
-	getQuiz(numQuestions, category, difficulty, quiztype)
+	getCategories()
 	{
-		const triviaUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quiztype}`
-		
-		const Trivia = axios.get(triviaUrl)
-
-		console.log(Trivia)
-
-		Trivia.then((res) => this.setState({
-
-			trivia:res.data.results,
-			quizLength: res.data.results.length,
-			feedbackMessages: positiveFeedbackMessages[0]
-		}))
+		const catUrl = 'https://opentdb.com/api_category.php'
+		const CategoryList = axios.get(catUrl)
+		CategoryList.then((res)=>
+		{
+			this.setState({
+				categories:res.data.trivia_categories
+			})
+		})
 	}
+
+	// Set parameters for quiz API
+	
 	
 	componentDidMount()
 	{	
-		const triviaUrl = `https://opentdb.com/api.php?amount=10&type=multiple&encode=url3986`
-		const Trivia = axios.get(triviaUrl)
 
-		console.log(Trivia)
+		this.getCategories()
+		
+		// const triviaUrl = `https://opentdb.com/api.php?category=${this.state.category}amount=10&type=multiple&encode=url3986`
+		// const Trivia = axios.get(triviaUrl)
 
-		Trivia.then((res) => this.setState({
+		// console.log(Trivia)
 
-			trivia:res.data.results,
-			quizLength: res.data.results.length,
-			feedbackMessages: positiveFeedbackMessages[0]
-		}))
+		// Trivia.then((res) => this.setState({
+
+		// 	trivia:res.data.results,
+		// 	quizLength: res.data.results.length,
+		// 	feedbackMessages: positiveFeedbackMessages[0]
+		// }))
 
 		
 
@@ -317,11 +373,8 @@ class QuizModal extends Component
 
 	componentDidUpdate()
 	{
-		
-	if (this.state.animateOptions)
-		{this.animateOptions()}
-		
-		//console.log(this.myElements)
+		console.log('Component Update')	
+	
 	}
 
 			
@@ -330,19 +383,19 @@ class QuizModal extends Component
 		//if(this.state.active){console.log('hello')}
 		return(
 			
-			<StyledModal>
+			<StyledModal>						
+			{
 
-		
-						
-					{
-
-				this.state.active ? ( <QuestionContainer>
+				this.state.active ? ( 
+				
+				(this.state.trivia !== null) ?  
+				
+				<QuestionContainer>
 										
 					<Question  text={decodeURIComponent(this.state.currentQuestion)}/>
 							
 					<OptionsList>
 					{
-						
 						this.state.currentOptions.map((option, key) =>
 						(
 
@@ -363,13 +416,15 @@ class QuizModal extends Component
 					</OptionsList>
 
 
-				{this.state.feedbackActive ? <Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} /> : <div></div>}
+					{this.state.feedbackActive ? <Feedback result={this.state.questionResultMessage} message={this.state.selectedOptionFeedback} /> : <div></div>}
 					
 					<NextButton  text="NEXT" handler={this.incrementCurrent}/>
 
 					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
 
-					</QuestionContainer>
+				</QuestionContainer> : 
+				
+				<div>Loading...</div>
 					) : 
 					<div className="welcome-screen">
 						{
@@ -389,7 +444,8 @@ class QuizModal extends Component
 							(
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<NextButton  text="NEXT" handler={this.incrementCurrent}/>
+									<MultipleSelect difficulties={this.state.difficulties} categories={this.state.categories}></MultipleSelect>
+								<NextButton  text="START" handler={this.startQuiz}/>
 								</div>
 							)
 						}

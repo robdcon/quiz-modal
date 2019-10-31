@@ -35,7 +35,7 @@ const NextButton = (props) =>
 			
 			<div>
 				
-				<Button className={classes.margin} size="large"  variant="contained" color="#00ff00" onClick={props.handler} value={props.text}>
+				<Button className={classes.margin} size="large"  variant="contained" onClick={props.handler} value={props.text}>
 				
 				<span>{props.text}</span>
 				
