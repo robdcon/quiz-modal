@@ -66,6 +66,7 @@ export default function MultipleSelect(props)
   const handleChange = event => 
   {
     setCategory(event.target.value);
+    props.handler(event.target.value)
   };
 
   const handleChangeMultiple = event => {

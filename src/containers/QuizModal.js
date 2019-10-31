@@ -106,7 +106,13 @@ class QuizModal extends Component
 		
 	}
 
+	setQuizCriteria = (value) =>
+	{
+		this.setState({
 
+			category:value
+		})
+	}
 
 	async startQuiz()
 	{
@@ -444,7 +450,7 @@ class QuizModal extends Component
 							(
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-									<MultipleSelect difficulties={this.state.difficulties} categories={this.state.categories}></MultipleSelect>
+									<MultipleSelect handler={this.setQuizCriteria} difficulties={this.state.difficulties} categories={this.state.categories}></MultipleSelect>
 								<NextButton  text="START" handler={this.startQuiz}/>
 								</div>
 							)
