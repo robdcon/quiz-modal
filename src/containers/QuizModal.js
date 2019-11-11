@@ -39,6 +39,7 @@ class QuizModal extends Component
 			incorrectAnswers: [],
 			currentQuestion: "",
 			currentOptions: [],
+			currentCorrectAnswer: "",
 			selectedOptionFeedback: "",
 			currentIndex:-1,
 			quizLength: 5,
@@ -135,7 +136,8 @@ class QuizModal extends Component
 			this.setState({
 
 				active: true,
-				currentIndex: 0
+				currentIndex: 0,
+				animateOptions: true
 			})
 			
 		})
@@ -167,6 +169,7 @@ class QuizModal extends Component
 
 
 		}))
+
 		//this.setNextQuestion(this.state.currentIndex)
 
 
@@ -294,7 +297,10 @@ class QuizModal extends Component
 		this.setState({
 
 			currentQuestion: this.state.trivia[index].question,
-			currentOptions: this.state.trivia[index].incorrect_answers
+			currentOptions: this.state.trivia[index].incorrect_answers,
+			currentOptions:  this.state.currentIndex + 1 === this.state.quizLength ? [] : this.shuffle([...this.state.trivia[this.state.currentIndex + 1].incorrect_answers, this.state.trivia[this.state.currentIndex + 1].correct_answer]),
+			currentCorrectAnswer:  this.state.currentIndex + 1 === this.state.quizLength ? "" :  this.state.trivia[this.state.currentIndex + 1].correct_answer
+
 		})
 	}
 
@@ -379,6 +385,11 @@ class QuizModal extends Component
 
 	componentDidUpdate()
 	{
+
+			
+		if (this.state.animateOptions)
+			{this.animateOptions()}
+		
 		console.log('Component Update')	
 	
 	}
