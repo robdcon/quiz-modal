@@ -9,6 +9,7 @@ import Counter from '../components/Counter'
 import WelcomeScreen from '../components/WelcomeScreen'
 import Score from '../components/Score'
 import {StyledModal} from '../styled/StyledModal'
+import ProgressBar from '../components/ProgressBar'
 import {TweenComponent} from '../components/TweenComponent'
 import TweenLite from "gsap";
 import { Tween, Timeline } from 'react-gsap'
@@ -29,7 +30,7 @@ class QuizModal extends Component
 		this.state = 
 		{
 			active:false,
-			welcomeMessage: "Welcome",
+			welcomeMessage: "TEST YOUR KNOWLEDGE",
 			resultMessage: "Finished",
 			questionResultMessage: "",
 			quizFinished: false,
@@ -440,7 +441,9 @@ class QuizModal extends Component
 					
 					<NextButton  text="NEXT" handler={this.incrementCurrent}/>
 
-					<Counter  count={this.state.currentIndex} total={this.state.quizLength} /> 
+					<Counter  count={(this.state.currentIndex + 1)} total={this.state.numQuestions} /> 
+
+					<ProgressBar oldScale={0} newScale={(this.state.currentIndex + 1)/(this.state.numQuestions)} />
 
 				</QuestionContainer> : 
 				
