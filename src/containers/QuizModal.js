@@ -89,7 +89,9 @@ class QuizModal extends Component
 			feedbackMessages: positiveFeedbackMessages[0],
 			active:false,
 			quizFinished: false,
-			currentIndex:-1
+			currentIndex:-1,
+			score: 0,
+			correctAnswers: [	]
 		})
 		
 	}
@@ -169,7 +171,8 @@ class QuizModal extends Component
 			currentQuestion: prevState.currentIndex + 1 === this.state.numQuestions ? "" : this.state.trivia[prevState.currentIndex + 1].question,
 			currentOptions:  prevState.currentIndex + 1 === this.state.numQuestions ? [] : this.shuffle([...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]),
 			currentCorrectAnswer:  prevState.currentIndex + 1 === this.state.numQuestions ? "" :  this.state.trivia[prevState.currentIndex + 1].correct_answer,
-			guesses: 0
+			guesses: 0,
+			score:this.getScore()
 
 
 		}))
@@ -456,7 +459,7 @@ class QuizModal extends Component
 							(	
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<Score score={this.getScore()}>
+								<Score score={this.state.score}>
 									<h2>Your score is</h2>
 								</Score>
 								<NextButton  text="START AGAIN" handler={this.resetQuiz}/>
