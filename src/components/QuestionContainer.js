@@ -1,12 +1,14 @@
 import React from 'react'
+import {StyledQuestionContainer} from '../styled/StyledQuestionContainer'
 
 const QuestionContainer = (props) => 
 {
   return( 
-
-  		<div className="question-container">
-	  		{props.children}
-	  	</div> 
+		
+			<StyledQuestionContainer className="question-container">
+				{props.children}
+			</StyledQuestionContainer> 
+		
 	)
 }
 

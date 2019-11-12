@@ -9,7 +9,7 @@ const WelcomeScreen = (props) =>
 	return(
 
 		
-		<div>			
+		<div className="welcome-screen">			
 			<h1>{props.title}</h1>
 			{props.children}
 		</div>

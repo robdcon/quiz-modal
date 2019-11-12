@@ -57,6 +57,8 @@ class QuizModal extends Component
 				'hard'
 			],
 			categories:[],
+			quizTypes:["Multiple"],
+			numbers:[1,2,3, ...10],
 			category:10,
 			difficulty:"easy",
 			quizType: "multiple",
@@ -107,11 +109,12 @@ class QuizModal extends Component
 		
 	}
 
-	setQuizCriteria = (value) =>
+	setQuizCriteria = (name, value) =>
 	{
+		console.log('CRITERIA', name, value)
 		this.setState({
-
-			category:value
+			
+			[name]:value
 		})
 	}
 
@@ -158,13 +161,13 @@ class QuizModal extends Component
 		
 			currentIndex: prevState.currentIndex + 1,
 			selectedOptionFeedback: "",
-			active: prevState.currentIndex + 1 === this.state.quizLength ? false : true,
-			quizFinished: prevState.currentIndex + 1 === this.state.quizLength ? true : false,
+			active: prevState.currentIndex + 1 === this.state.numQuestions ? false : true,
+			quizFinished: prevState.currentIndex + 1 === this.state.numQuestions ? true : false,
 			animateOptions: true,
 			feedbackActive:false,
-			currentQuestion: prevState.currentIndex + 1 === this.state.quizLength ? "" : this.state.trivia[prevState.currentIndex + 1].question,
-			currentOptions:  prevState.currentIndex + 1 === this.state.quizLength ? [] : this.shuffle([...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]),
-			currentCorrectAnswer:  prevState.currentIndex + 1 === this.state.quizLength ? "" :  this.state.trivia[prevState.currentIndex + 1].correct_answer,
+			currentQuestion: prevState.currentIndex + 1 === this.state.numQuestions ? "" : this.state.trivia[prevState.currentIndex + 1].question,
+			currentOptions:  prevState.currentIndex + 1 === this.state.numQuestions ? [] : this.shuffle([...this.state.trivia[prevState.currentIndex + 1].incorrect_answers, this.state.trivia[prevState.currentIndex + 1].correct_answer]),
+			currentCorrectAnswer:  prevState.currentIndex + 1 === this.state.numQuestions ? "" :  this.state.trivia[prevState.currentIndex + 1].correct_answer,
 			guesses: 0
 
 
@@ -298,8 +301,8 @@ class QuizModal extends Component
 
 			currentQuestion: this.state.trivia[index].question,
 			currentOptions: this.state.trivia[index].incorrect_answers,
-			currentOptions:  this.state.currentIndex + 1 === this.state.quizLength ? [] : this.shuffle([...this.state.trivia[this.state.currentIndex + 1].incorrect_answers, this.state.trivia[this.state.currentIndex + 1].correct_answer]),
-			currentCorrectAnswer:  this.state.currentIndex + 1 === this.state.quizLength ? "" :  this.state.trivia[this.state.currentIndex + 1].correct_answer
+			currentOptions:  this.state.currentIndex + 1 === this.state.numQuestions ? [] : this.shuffle([...this.state.trivia[this.state.currentIndex + 1].incorrect_answers, this.state.trivia[this.state.currentIndex + 1].correct_answer]),
+			currentCorrectAnswer:  this.state.currentIndex + 1 === this.state.numQuestions ? "" :  this.state.trivia[this.state.currentIndex + 1].correct_answer
 
 		})
 	}
@@ -416,13 +419,13 @@ class QuizModal extends Component
 						this.state.currentOptions.map((option, key) =>
 						(
 
-								<OptionButton 
+							<OptionButton 
 
-									key={"q=" + this.state.currentIndex + "-o-" + key} 
-									feedback={option.feedback} 
-									handler={(e) => {let isTrue = (option === this.state.currentCorrectAnswer ? true : false); this.handleResponse(e, isTrue, option.feedback)  } } 
-									isTrue={option === this.state.currentCorrectAnswer ? true : false} 
-									text={decodeURIComponent(option)}>
+								key={"q=" + this.state.currentIndex + "-o-" + key} 
+								feedback={option.feedback} 
+								handler={(e) => {let isTrue = (option === this.state.currentCorrectAnswer ? true : false); this.handleResponse(e, isTrue, option.feedback)  } } 
+								isTrue={option === this.state.currentCorrectAnswer ? true : false} 
+								text={decodeURIComponent(option)}>
 
 							</OptionButton>
 							
@@ -461,7 +464,15 @@ class QuizModal extends Component
 							(
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-									<MultipleSelect handler={this.setQuizCriteria} difficulties={this.state.difficulties} categories={this.state.categories}></MultipleSelect>
+									<MultipleSelect  
+										handler={this.setQuizCriteria} 
+										difficulty={this.state.difficulties} 
+										categories={this.state.categories} 
+										numbers={this.state.numbers} 
+										quizTypes={this.state.quizTypes}
+									>
+
+									</MultipleSelect>
 								<NextButton  text="START" handler={this.startQuiz}/>
 								</div>
 							)

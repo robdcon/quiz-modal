@@ -1,7 +1,12 @@
 import styled from 'styled-components'
 
 export const StyledModal = styled.div`
-	
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+
 	width: 800px;
 	min-height: 400px;
     max-width: 100%;

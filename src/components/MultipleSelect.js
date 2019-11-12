@@ -59,25 +59,30 @@ function getStyles(name, category, theme) {
 
 export default function MultipleSelect(props) 
 {
+  const quizCategories = props.categories;
   const classes = useStyles();
   const theme = useTheme();
-  const [category, setCategory] = React.useState('');
+  const [state, setState] = React.useState({
 
-  const handleChange = event => 
+    category:"",
+    difficulty:"",
+    quizType:"",
+    numQuestions:""
+
+  });
+
+  const handleChange = (event) => 
   {
-    setCategory(event.target.value);
-    props.handler(event.target.value)
-  };
+    const value = event.target.value
+    const name = event.target.name
+   
 
-  const handleChangeMultiple = event => {
-    const { options } = event.target;
-    const value = [];
-    for (let i = 0, l = options.length; i < l; i += 1) {
-      if (options[i].selected) {
-        value.push(options[i].value);
-      }
-    }
-    setCategory(value);
+    setState({
+      ...state,
+      [name]:value
+    });
+
+    props.handler(name, value)
   };
 
   return (
@@ -86,13 +91,14 @@ export default function MultipleSelect(props)
 
 
       <FormControl className={classes.formControl}>
-        <InputLabel htmlFor="select-multiple">Category</InputLabel>
+        <InputLabel htmlFor="category">Category</InputLabel>
         <Select
          
-          value={category}
+          value={state.category}
           onChange={handleChange}
-          input={<Input id="select-multiple" />}
+          input={<Input id="category" />}
           MenuProps={MenuProps}
+          name="category"
         >
           {props.categories.map(category => (
             <MenuItem key={category.id} value={category.id} >
@@ -102,17 +108,45 @@ export default function MultipleSelect(props)
         </Select>
       </FormControl>
 
+      <FormControl className={classes.formControl} >
+        <InputLabel htmlFor="difficulty">Difficulty</InputLabel>
+        <Select
+         
+          value={state.difficulty}
+          onChange={handleChange}
+          input={<Input id="difficulty" />}
+          MenuProps={MenuProps}
+          name="difficulty"
+        >
+          {props.difficulty.map((arr, i) => (
+           
+            <MenuItem key={i} value={arr} >
+              {arr}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
-
-
-      
-
-
-    
-
+      <FormControl className={classes.formControl} >
+        <InputLabel htmlFor="numQuestions">Quiz Length</InputLabel>
+        <Select
+         
+          value={state.numQuestions}
+          onChange={handleChange}
+          input={<Input id="numQuestions" />}
+          MenuProps={MenuProps}
+          name="numQuestions"
+        >
+          {numbers.map((arr, i) => (
+           
+            <MenuItem key={i} value={arr} >
+              {arr}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
      
-      
     </div>
   );
 }
