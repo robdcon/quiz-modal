@@ -78,7 +78,13 @@ class QuizModal extends Component
 		
 	}
 
+	async generateToken()
+	{
+		const req = await axios.get("https://opentdb.com/api_token.php?command=request")
+								.then((res) => {console.log("Response: ",res); return res.data.token})
 	
+
+	}
 
 	resetQuiz()
 	{		
@@ -98,15 +104,16 @@ class QuizModal extends Component
 
 	async getQuiz()
 	{
+		const sessionToken = await this.generateToken()
 		const numQuestions = this.state.numQuestions
 		const category = this.state.category
 		const difficulty = this.state.difficulty
 		const quizType = this.state.quizType
 
-		const triviaUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quizType}&encode=url3986`
+		const triviaUrl = `https://opentdb.com/api.php?amount=${numQuestions}&category=${category}&difficulty=${difficulty}&type=${quizType}&encode=url3986&token=${sessionToken}`
 		
 		const Trivia = await axios.get(triviaUrl)
-		console.log('getQuiz')
+		console.log(triviaUrl)
 		return Trivia
 
 		
@@ -123,6 +130,7 @@ class QuizModal extends Component
 
 	async startQuiz()
 	{
+		
 		const triviaData = await this.getQuiz()
 		.then((res) => 
 		{
@@ -459,7 +467,7 @@ class QuizModal extends Component
 							(	
 								<div>
 								<WelcomeScreen title={ this.state.quizFinished ? this.state.resultMessage : this.state.welcomeMessage } />
-								<Score score={this.state.score}>
+								<Score score={this.getScore()}>
 									<h2>Your score is</h2>
 								</Score>
 								<NextButton  text="START AGAIN" handler={this.resetQuiz}/>
